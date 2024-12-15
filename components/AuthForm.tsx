@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-
+import { createAccount, signInUser } from "@/lib/actions/user.actions";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -33,27 +33,35 @@ const AuthForm = ({ type }: { type: FormType }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [accountId, setAccountId] = useState(null);
-
   const defaultValues = {
     fullName: "",
     email: "",
   };
+
   const formSchema = authFormSchema(type);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues,
   });
 
-  const { handleSubmit } = form;
+  const { handleSubmit, control } = form;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     setErrorMessage("");
-    console.log(values);
 
     try {
+      const user =
+        type === "sign-up"
+          ? await createAccount({
+              fullName: values.fullName || "",
+              email: values.email,
+            })
+          : await signInUser({ email: values.email });
+
+      setAccountId(user.accountId);
     } catch {
-      setErrorMessage("Failed to create account. Please try again.");
+      setErrorMessage("Failed to create account! Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +76,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
           </h1>
           {type === "sign-up" && (
             <FormField
-              control={form.control}
+              control={control}
               name="fullName"
               render={({ field }) => (
                 <FormItem>
@@ -91,7 +99,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
           )}
 
           <FormField
-            control={form.control}
+            control={control}
             name="email"
             render={({ field }) => (
               <FormItem>
