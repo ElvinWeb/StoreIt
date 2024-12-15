@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import OtpModal from "./OTPModal";
 
 type FormType = "sign-in" | "sign-up";
 const authFormSchema = (formType: FormType) => {
@@ -44,7 +45,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
     defaultValues,
   });
 
-  const { handleSubmit, control } = form;
+  const { handleSubmit, getValues, control } = form;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
@@ -155,6 +156,10 @@ const AuthForm = ({ type }: { type: FormType }) => {
           </div>
         </form>
       </Form>
+
+      {accountId && (
+        <OtpModal email={getValues("email")} accountId={accountId} />
+      )}
     </>
   );
 };

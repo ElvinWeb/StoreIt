@@ -119,3 +119,35 @@ export const signInUser = async ({ email }: { email: string }) => {
     return null;
   }
 };
+
+export const verifySecret = async ({
+  accountId,
+  password,
+}: {
+  accountId: string;
+  password: string;
+}) => {
+  try {
+    // Create admin client once
+    const { account } = await createAdminClient();
+
+    // Create session and get cookie store in parallel
+    const [session, cookieStore] = await Promise.all([
+      account.createSession(accountId, password),
+      cookies()
+    ]);
+
+    // Set session cookie
+    cookieStore.set("appwrite-session", session.secret, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "strict",
+      secure: true,
+    });
+
+    return parseStringify({ sessionId: session.$id });
+  } catch (error) {
+    handleError(error, "Failed to verify OTP");
+    return null; // Explicitly return null on error
+  }
+};
