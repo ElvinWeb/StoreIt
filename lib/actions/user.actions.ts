@@ -89,6 +89,27 @@ export const createAccount = async ({
   }
 };
 
+export const getCurrentUser = async () => {
+  try {
+    const { databases, account } = await createSessionClient();
+
+    const result = await account.get();
+
+    const user = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.usersCollectionId,
+      [Query.equal("accountId", result.$id)]
+    );
+
+    if (user.total <= 0) return null;
+
+    return parseStringify(user.documents[0]);
+  } catch (error) {
+    handleError(error, "Failed to get current user");
+    return null;
+  }
+};
+
 export const signOutUser = async () => {
   try {
     const { account } = await createSessionClient();
@@ -134,7 +155,7 @@ export const verifySecret = async ({
     // Create session and get cookie store in parallel
     const [session, cookieStore] = await Promise.all([
       account.createSession(accountId, password),
-      cookies()
+      cookies(),
     ]);
 
     // Set session cookie
