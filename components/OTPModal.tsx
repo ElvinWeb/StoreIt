@@ -29,18 +29,16 @@ const OtpModal = ({
   email: string;
 }) => {
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(true);
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [password, setPassword] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
       const sessionId = await verifySecret({ accountId, password });
-
-      console.log({ sessionId });
 
       if (sessionId) router.push("/");
     } catch (error) {

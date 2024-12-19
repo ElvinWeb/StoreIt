@@ -32,7 +32,7 @@ const MobileNavigation = ({
   avatar,
   email,
 }: Props) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
   const pathname = usePathname();
 
   return (

@@ -35,8 +35,8 @@ function ActionDropdown({ file }: { file: Models.Document }) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [action, setAction] = useState<ActionType | null>(null);
-  const [name, setName] = useState(file.name);
-  const [isLoading, setIsLoading] = useState(false);
+  const [name, setName] = useState<string>(file.name);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [emails, setEmails] = useState<string[]>([]);
   const path = usePathname();
 
